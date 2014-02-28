@@ -178,7 +178,7 @@
 				$sql = 'SELECT i.*, t.tag FROM items i LEFT JOIN items_to_tags l ON i.id=l.item_id LEFT JOIN tags t ON l.tag_id=t.id WHERE i.id IN (SELECT l.item_id FROM tags t LEFT JOIN items_to_tags l ON t.id=l.tag_id WHERE t.tag = :searchterm) AND i.active = 1 ORDER BY i.added DESC';
 			} else {
 				//normal search
-				$searchterm = '% '.$_GET['term'].' %';
+				$searchterm = '%'.$_GET['term'].'%';
 				$sql = 'SELECT i.*, t.tag FROM items i LEFT JOIN items_to_tags l ON i.id=l.item_id LEFT JOIN tags t ON l.tag_id=t.id WHERE title LIKE :searchterm AND i.active = 1 ORDER BY i.added DESC';
 			}
 
