@@ -21,7 +21,7 @@ I just wanted a way to continue to use the bookmarks I have amassed, combined wi
 
 ### Instructions
 
-- copy the files to your server
+- copy the files to your server (don't forget the .htaccess, as it protects your database and JSON file from download)
 - copy the JSON export to the same directory and note the filename
 - call yourserver.com/private-zoo/?import=\<the JSON filename with extension\>
 - wait a while for the import to finish
