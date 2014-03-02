@@ -218,6 +218,8 @@
 <head>
 	<title>Private Zoo</title>
 
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 	<link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -253,11 +255,12 @@
 				<dt id="item-<?= $r['id'] ?>"><a data-timestamp="<?= $r['added'] ?>" href="<?= $r['url'] ?>"><?= $r['title'] ?></a></dt>
 				<dd>
 					<p class="url"><?= $r['url'] ?></p>
-					<p class="desc"><time datetime="<?= date('Y-m-d\TH:i:s', $r['added']) ?>"><?= date('M d, Y', $r['added']) ?> &ndash;</time> <?= $r['description'] ?></p>
+					<p class="desc"><time datetime="<?= date('Y-m-d\TH:i:s', $r['added']) ?>"><?= date('M d, Y', $r['added']) ?><?php if(!empty($r['description'])) echo(' &ndash;') ?></time> <?= $r['description'] ?></p>
 
 					<ul class="tags"><?php
 						foreach($r['tags'] as $tag) {
-							echo('<li><a href="?type=tag&term='.$tag.'">'.$tag.'</a></li>');
+							$active = ($_GET['term'] == $tag) ? ' class="active"' : '';
+							echo('<li><a href="?type=tag&term='.$tag.'"'.$active.'>'.$tag.'</a></li>');
 						}
 					?></ul>
 				</dd>
