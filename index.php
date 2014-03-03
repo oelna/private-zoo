@@ -65,7 +65,7 @@
 					echo($e->getMessage());
 				}
 			}
-			if($success === true) echo('Added "'.$item['title'].'"<br />');
+			if($success === true) echo('Added "<a href="'.$item['referer'].'" class="button">'.$item['title'].'</a>"<br />');
 
 
 			//process tags (todo: packs!)
@@ -157,6 +157,7 @@
 			$insert = array(
 				'title' => $_GET['title'],
 				'url' => $_GET['url'],
+				'referer' => $_GET['referer'],
 				'type' => 'page',
 				'public' => 'n',
 				'description' => $_GET['description'],
@@ -232,17 +233,18 @@
 				<option value="searchterm"<?php if(isset($_GET['type']) && $_GET['type'] == 'searchterm') echo('selected') ?>>title</option>
 				<option value="tag"<?php if(isset($_GET['type']) && $_GET['type'] == 'tag') echo('selected') ?>>tag</option>
 			</select>
-			<input type="text" name="term" value="<?php if(isset($_GET['term']) && !empty($_GET['term'])) echo($_GET['term']) ?>" placeholder="search term or tag" />
-			<input type="submit" value="search" /> or <a href="#add" id="add-toggle">Add a new URL</a>
+			<input type="text" name="term" value="<?php if(isset($_GET['term']) && !empty($_GET['term'])) echo($_GET['term']) ?>" placeholder="search term or tag"<?php if(!isset($_GET['prefill'])) echo(' autofocus') ?> />
+			<input type="submit" value="search" /> or <a href="#add" id="add-toggle" class="button">Add a new URL</a>
 		</form>
 
-		<form id="add">
+		<form id="add<?php if(isset($_GET['prefill'])) echo(' show') ?>">
 			<h1>Add a new URL</h1>
 
 			<input type="hidden" name="new" value="1" />
-			<input type="text" name="title" placeholder="the title" />
-			<input type="text" name="url" placeholder="the url" />
-			<input type="text" name="description" placeholder="the description" />
+			<input type="hidden" name="referer" value="<?php if(isset($_GET['prefill']) && !empty($_SERVER['HTTP_REFERER'])) echo($_SERVER['HTTP_REFERER']) ?>" />
+			<input type="text" name="title" placeholder="the title" value="<?php if(isset($_GET['title'])) echo($_GET['title']) ?>"<?php if(isset($_GET['prefill'])) echo(' autofocus') ?> />
+			<input type="text" name="url" placeholder="the url" value="<?php if(isset($_GET['url'])) echo($_GET['url']) ?>" />
+			<input type="text" name="description" placeholder="the description" value="<?php if(isset($_GET['description'])) echo($_GET['description']) ?>" />
 			<input type="text" name="tags" placeholder="the tags, comma separated" />
 			<input type="submit" value="add to your zoo" />
 		</form>
@@ -270,7 +272,20 @@
 				<p>No results in your zoo.</p>
 			<?php endif; ?>
 		<?php else: ?>
-			<p>Enter a search term or tag to begin searching the <?= ($items_auto_increment-1) ?> items in your zoo.</p>
+			<p>Enter a search term or tag to begin searching the <?= ($items_auto_increment-1) ?> items in your zoo. Or use the <a href="<?php
+
+			//build a basic bookmarklet for collecting urls, remove newline, tabs and spaces
+			echo(preg_replace('/[\r\n\t\s]*/', "", "javascript:
+				(function (domain, t, u, d) {
+					domain = ('https:' == document.location.protocol ? 'https://' : 'http://') + domain;
+					d = (d && d[0]) ? d[0].getAttribute('content') : '';
+
+					window.location.href = domain+'?prefill=1&title='+encodeURIComponent(t)+'&url='+encodeURIComponent(u)+'&description='+encodeURIComponent(d);
+
+				}('".$_SERVER['HTTP_HOST'].rtrim($_SERVER['REQUEST_URI'], '/')."/', document.title, window.location, document.querySelectorAll('meta[name=\'description\'][content]')));
+			"));
+
+			?>" title="Drag this to your bookmarks bar" class="button">Lasso</a> to collect page links.</p>
 		<?php endif; ?>
 		</dl>
 	</div>
@@ -281,7 +296,7 @@
 				e.preventDefault();
 				document.getElementById('add').style.display = 'block';
 			};
-		}
+		};
 	</script>
 </body>
 </html>

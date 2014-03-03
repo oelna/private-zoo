@@ -10,7 +10,7 @@ A simple (and not very robust) PHP app that imports Zootool's JSON export files 
 - beauty
 - performance
 - scalability
- 
+
 This means I have not tested this with very large datasets. Your server may complain or time out during import, if you have a lot of items in your zoo.
 I just wanted a way to continue to use the bookmarks I have amassed, combined with a simple search mechanism. If anyone wants to contribute, they're very welcome, but I cannot promise I'll keep actively developing this. I may.
 
@@ -26,3 +26,4 @@ I just wanted a way to continue to use the bookmarks I have amassed, combined wi
 - call yourserver.com/private-zoo/?import=\<the JSON filename with extension\>
 - wait a while for the import to finish
 - go to yourserver.com/private-zoo/, start searching your archive or add new URLs
+- (optional) drag the "Lasso" bookmarklet to make bookmarking even easier
