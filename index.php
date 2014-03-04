@@ -7,16 +7,26 @@
 	//user settings
 	$database_name = 'database.sqlite';
 	$overwrite_database = 0; //this overwrites the database file, if one is already present. caution!
+	$stylesheet = 'style_classic.css'; // style_classic.css or style_zootool.css or really any CSS you want
 
 	//automatic settings
+	$console = array(
+		'success' => array(),
+		'notice' => array(),
+		'error' => array()
+	);
 	$sqlite_support = (in_array('sqlite', PDO::getAvailableDrivers())) ? true : false;
 	$zootool_export_filename = $_GET['import']; //needs to be the JSON format export, eg. "zoo_export_20140227.json"
 	$is_import = (isset($_GET['import'])) ? true : false;
 
-	if($overwrite_database === 1 && file_exists(PATH.DS.$database_name)) unlink(PATH.DS.$database_name);
+	if($overwrite_database === 1 && file_exists(PATH.DS.$database_name)) {
+		unlink(PATH.DS.$database_name);
+		$console['notice'][] = 'The database was completely erased due to the overwrite setting in the user settings.';
+	}
 
 	function zoo_insert($entries=array()) {
 		global $db;
+		global $console;
 		global $items_auto_increment;
 		if(empty($entries)) return false;
 
@@ -40,6 +50,16 @@
 
 		foreach($entries as $item) {
 			$success = false;
+
+			if(empty($item['url'])) {
+				$console['error'][] = 'You did not specify an URL to add';
+				continue;
+			}
+			if(empty($item['title'])) {
+				$console['error'][] = 'You did not specify a title for the URL '.$item['url'];
+				continue;
+			}
+
 			try {
 				$stmt_items->execute(array(
 					':id' => $items_auto_increment,
@@ -60,13 +80,12 @@
 				$success = false;
 
 				if(strval($e->getCode()) == 23000) {
-					echo('This is already in your zoo');
+					$console['notice'][] = 'This is already in your zoo';
 				} else {
-					echo($e->getMessage());
+					$console['error'][] = 'Database error: '.$e->getMessage();
 				}
 			}
-			if($success === true) echo('Added "<a href="'.$item['referer'].'" class="button">'.$item['title'].'</a>"<br />');
-
+			if($success === true) $console['success'][] = 'Added "<a href="'.$item['referer'].'" class="button">'.$item['title'].'</a>"';
 
 			//process tags (todo: packs!)
 			if(!empty($item['tags'])) {
@@ -120,17 +139,20 @@
 			$items_auto_increment = array_shift(array_shift($check->fetchAll(PDO::FETCH_ASSOC)));
 			$items_auto_increment++; //increment by 1 for next entry
 		} catch(PDOException $e) {
+			$console['notice'][] = 'The required database table ITEMS did not exist and had to be created.';
 			$db->exec("CREATE TABLE items (id INTEGER PRIMARY KEY, title TEXT, url TEXT, type VARCHAR(16), added NUMERIC, checksum VARCHAR(64) UNIQUE, public BOOLEAN, referer TEXT, description TEXT, active BOOLEAN)");
 			$items_auto_increment = 1;
 		}
 		try {
 			$check = $db->query('SELECT 1 FROM tags LIMIT 1');
 		} catch(PDOException $e) {
+			$console['notice'][] = 'The required database table TAGS did not exist and had to be created.';
 			$db->exec("CREATE TABLE tags (id INTEGER PRIMARY KEY, tag VARCHAR(64) UNIQUE)");
 		}
 		try {
 			$check = $db->query('SELECT 1 FROM items_to_tags LIMIT 1');
 		} catch(PDOException $e) {
+			$console['notice'][] = 'The required database table that links TAGS to ITEMS did not exist and had to be created.';
 			$db->exec("CREATE TABLE items_to_tags (item_id INTEGER, tag_id INTEGER)");
 		}
 
@@ -204,7 +226,7 @@
 				}
 
 			} catch(PDOException $e) {
-				echo($e->getMessage());
+				$console['error'][] = $e->getMessage();
 			}
 
 
@@ -212,6 +234,8 @@
 
 		//close DB connection when we are done
 		$db = null;
+	} else {
+		$console['error'][] = 'This application needs SQLite-support and PHP\'s PDO, but did not find it.';
 	}
 
 ?><!DOCTYPE html>
@@ -221,7 +245,7 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="<?= $stylesheet ?>" />
 </head>
 <body>
 	<div id="container">
@@ -237,17 +261,43 @@
 			<input type="submit" value="search" /> or <a href="#add" id="add-toggle" class="button">Add a new URL</a>
 		</form>
 
-		<form id="add<?php if(isset($_GET['prefill'])) echo(' show') ?>">
+		<form id="add"<?php if(isset($_GET['prefill'])) echo(' class="show"') ?>>
 			<h1>Add a new URL</h1>
 
 			<input type="hidden" name="new" value="1" />
 			<input type="hidden" name="referer" value="<?php if(isset($_GET['prefill']) && !empty($_SERVER['HTTP_REFERER'])) echo($_SERVER['HTTP_REFERER']) ?>" />
 			<input type="text" name="title" placeholder="the title" value="<?php if(isset($_GET['title'])) echo($_GET['title']) ?>"<?php if(isset($_GET['prefill'])) echo(' autofocus') ?> />
 			<input type="text" name="url" placeholder="the url" value="<?php if(isset($_GET['url'])) echo($_GET['url']) ?>" />
-			<input type="text" name="description" placeholder="the description" value="<?php if(isset($_GET['description'])) echo($_GET['description']) ?>" />
-			<input type="text" name="tags" placeholder="the tags, comma separated" />
+			<textarea rows="4" name="description" placeholder="the description"><?php if(isset($_GET['description'])) echo($_GET['description']) ?></textarea>
+			<textarea rows="2" name="tags" placeholder="the tags, comma separated"></textarea>
 			<input type="submit" value="add to your zoo" />
 		</form>
+
+		<?php if(!empty($console['error']) || !empty($console['notice']) || !empty($console['success'])): ?>
+		<div id="messages">
+			<?php if(!empty($console['error'])): ?>
+				<ul class="error">
+					<?php foreach($console['error'] as $msg): ?>
+					<li><?= $msg ?></li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+			<?php if(!empty($console['notice'])): ?>
+				<ul class="notice">
+					<?php foreach($console['notice'] as $msg): ?>
+					<li><?= $msg ?></li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+			<?php if(!empty($console['success'])): ?>
+				<ul class="success">
+					<?php foreach($console['success'] as $msg): ?>
+					<li><?= $msg ?></li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+		</div>
+		<?php endif; ?>
 
 		<dl id="entries">
 
@@ -277,7 +327,7 @@
 			//build a basic bookmarklet for collecting urls, remove newline, tabs and spaces
 			echo(preg_replace('/[\r\n\t\s]*/', "", "javascript:
 				(function (domain, t, u, d) {
-					domain = ('https:' == document.location.protocol ? 'https://' : 'http://') + domain;
+					domain = '".((isset($_SERVER['HTTPS'])) ? 'https://' : 'http://' )."' + domain;
 					d = (d && d[0]) ? d[0].getAttribute('content') : '';
 
 					window.location.href = domain+'?prefill=1&title='+encodeURIComponent(t)+'&url='+encodeURIComponent(u)+'&description='+encodeURIComponent(d);

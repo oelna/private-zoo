@@ -23,12 +23,48 @@ a.button {
 	margin: 1em auto;
 }
 
+#messages {
+	margin-bottom: 1em;
+}
+
+#messages ul {
+	margin: 0.5em 0;
+	padding: 0.5em;
+	border-radius: 0.5em;
+	background-color: #007aff;
+	color: #fff;
+}
+
+#messages ul.error { background-color: #ff2d55; }
+#messages ul.success { background-color: #4cd964; }
+
+#messages li {
+	line-height: 1.1;
+	list-style: none;
+	margin-bottom: 0.4em;
+}
+
+#messages li a {
+	color: #fff;
+}
+
 #add {
 	display: none; /* this is toggled via javascript */
+	width: 100%;
 }
 
 #add.show {
 	display: block;
+}
+
+#add input[type="text"],
+#add textarea {
+	width: 100%;
+	display: block;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 #search,
@@ -39,7 +75,6 @@ a.button {
 #search h1,
 #add h1 {
 	margin-bottom: 0.4em;
-
 	font-size: 1.5em;
 }
 
@@ -49,11 +84,24 @@ a.button {
 	margin-right: 0.7em;
 }
 
+#add textarea {
+	resize: vertical;
+}
+
 #search input[type="text"],
-#add input[type="text"] {
+#add input[type="text"],
+#add textarea {
 	border: 1px solid #aaa;
 	padding: 0.2em;
 	margin-bottom: 0.4em;
+}
+
+#search input[type="text"]:focus,
+#search select:focus,
+#add input[type="text"]:focus,
+#add textarea:focus {
+	outline: 0;
+	border-color: #007aff;
 }
 
 #search select {
@@ -120,17 +168,29 @@ a.button {
 	color: #fff;
 }
 
-@media only screen and (min-width: 641px) {
+@media only screen and (min-width: 42em) {
 	html {
 		font-size: 100%;
 	}
 
 	#container {
 		width: 75%;
+		max-width: 50em;
 		margin: 5em auto;
+	}
+
+	#add {
+		width: 65%;
+		max-width: 28.5em;
 	}
 
 	#entries dd .tags a {
 		margin-right: 0.6em;
+	}
+}
+
+@media only screen and (min-width: 80em) {
+	#container {
+		width: 55%;
 	}
 }
