@@ -63,12 +63,12 @@
 			try {
 				$stmt_items->execute(array(
 					':id' => $items_auto_increment,
-					':title' => $item['title'],
-					':url' => $item['url'],
+					':title' => stripslashes($item['title']),
+					':url' => stripslashes($item['url']),
 					':type' => $item['type'],
 					':public' => $item['public'],
-					':referer' => $item['referer'],
-					':description' => $item['description'],
+					':referer' => stripslashes($item['referer']),
+					':description' => stripslashes($item['description']),
 					':added' => $item['added'],
 					':checksum' => sha1($item['url']),
 					':active' => 1
@@ -85,7 +85,7 @@
 					$console['error'][] = 'Database error: '.$e->getMessage();
 				}
 			}
-			if($success === true) $console['success'][] = 'Added "<a href="'.$item['referer'].'" class="button">'.$item['title'].'</a>"';
+			if($success === true) $console['success'][] = 'Added "<a href="'.$item['referer'].'" class="button">'.stripslashes($item['title']).'</a>"';
 
 			//process tags (todo: packs!)
 			if(!empty($item['tags'])) {
@@ -94,7 +94,7 @@
 
 					//insert the tag
 					$stmt_tags->execute(array(
-						':tagname'=> $tag_name
+						':tagname'=> stripslashes($tag_name)
 					));
 
 					//get the ID of the specified tag (bad performance?)
@@ -197,11 +197,11 @@
 		if(isset($_GET['type']) || isset($_GET['term'])) {
 			if($_GET['type'] == 'tag') {
 				//tag search
-				$searchterm = $_GET['term'];
+				$searchterm = stripslashes($_GET['term']);
 				$sql = 'SELECT i.*, t.tag FROM items i LEFT JOIN items_to_tags l ON i.id=l.item_id LEFT JOIN tags t ON l.tag_id=t.id WHERE i.id IN (SELECT l.item_id FROM tags t LEFT JOIN items_to_tags l ON t.id=l.tag_id WHERE t.tag = :searchterm) AND i.active = 1 ORDER BY i.added DESC';
 			} else {
 				//normal search
-				$searchterm = '%'.$_GET['term'].'%';
+				$searchterm = '%'.stripslashes($_GET['term']).'%';
 				$sql = 'SELECT i.*, t.tag FROM items i LEFT JOIN items_to_tags l ON i.id=l.item_id LEFT JOIN tags t ON l.tag_id=t.id WHERE title LIKE :searchterm AND i.active = 1 ORDER BY i.added DESC';
 			}
 
@@ -257,7 +257,7 @@
 				<option value="searchterm"<?php if(isset($_GET['type']) && $_GET['type'] == 'searchterm') echo('selected') ?>>title</option>
 				<option value="tag"<?php if(isset($_GET['type']) && $_GET['type'] == 'tag') echo('selected') ?>>tag</option>
 			</select>
-			<input type="text" name="term" value="<?php if(isset($_GET['term']) && !empty($_GET['term'])) echo($_GET['term']) ?>" placeholder="search term or tag"<?php if(!isset($_GET['prefill'])) echo(' autofocus') ?> />
+			<input type="text" name="term" value="<?php if(isset($_GET['term']) && !empty($_GET['term'])) echo(stripslashes($_GET['term'])) ?>" placeholder="search term or tag"<?php if(!isset($_GET['prefill'])) echo(' autofocus') ?> />
 			<input type="submit" value="search" /> or <a href="#add" id="add-toggle" class="button">Add a new URL</a>
 		</form>
 
@@ -265,10 +265,10 @@
 			<h1>Add a new URL</h1>
 
 			<input type="hidden" name="new" value="1" />
-			<input type="hidden" name="referer" value="<?php if(isset($_GET['prefill']) && !empty($_SERVER['HTTP_REFERER'])) echo($_SERVER['HTTP_REFERER']) ?>" />
-			<input type="text" name="title" placeholder="the title" value="<?php if(isset($_GET['title'])) echo($_GET['title']) ?>"<?php if(isset($_GET['prefill'])) echo(' autofocus') ?> />
-			<input type="text" name="url" placeholder="the url" value="<?php if(isset($_GET['url'])) echo($_GET['url']) ?>" />
-			<textarea rows="4" name="description" placeholder="the description"><?php if(isset($_GET['description'])) echo($_GET['description']) ?></textarea>
+			<input type="hidden" name="referer" value="<?php if(isset($_GET['prefill']) && !empty($_SERVER['HTTP_REFERER'])) echo(stripslashes($_SERVER['HTTP_REFERER'])) ?>" />
+			<input type="text" name="title" placeholder="the title" value="<?php if(isset($_GET['title'])) echo(stripslashes($_GET['title'])) ?>"<?php if(isset($_GET['prefill'])) echo(' autofocus') ?> />
+			<input type="text" name="url" placeholder="the url" value="<?php if(isset($_GET['url'])) echo(stripslashes($_GET['url'])) ?>" />
+			<textarea rows="4" name="description" placeholder="the description"><?php if(isset($_GET['description'])) echo(stripslashes($_GET['description'])) ?></textarea>
 			<textarea rows="2" name="tags" placeholder="the tags, comma separated"></textarea>
 			<input type="submit" value="add to your zoo" />
 		</form>
