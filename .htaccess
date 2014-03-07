@@ -1,4 +1,13 @@
-<FilesMatch "\.(?:sqlite|json)$">
+#prevent download of your database files
+<FilesMatch "\.(?:sqlite|json|htaccess)$">
 Order allow,deny
 Deny from all
 </FilesMatch>
+
+DirectoryIndex index.php
+
+RewriteEngine On
+RewriteBase /private-zoo
+
+#resolve pretty urls
+RewriteRule ^(tag|search)/(.+)/$ index.php?type=$1&term=$2 [L]

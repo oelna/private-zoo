@@ -8,9 +8,11 @@
 	//user settings
 	$database_name = 'database.sqlite';
 	$overwrite_database = 0; //this overwrites the database file, if one is already present. caution!
+	$pretty_urls = 0; //please set the correct RewriteBase in .htaccess for this to work!
 	$stylesheet = 'style_classic.css'; // style_classic.css or style_zootool.css or really any CSS you want
 
 	//automatic settings
+	$site_dir = dirname($_SERVER['PHP_SELF']); //this is especially important if you run this site in a subfolder
 	$console = array(
 		'success' => array(),
 		'notice' => array(),
@@ -23,6 +25,11 @@
 	if($overwrite_database === 1 && file_exists(PATH.DS.$database_name)) {
 		unlink(PATH.DS.$database_name);
 		$console['notice'][] = 'The database was completely erased due to the overwrite setting in the user settings.';
+	}
+
+	//rewrite the query string for searches to a pretty url
+	if($pretty_urls && (isset($_POST['type']) && isset($_POST['term']))) {
+		exit(header('Location: '.$site_dir.'/'.$_POST['type'].'/'.$_POST['term'].'/'));
 	}
 
 	function zoo_insert($entries=array()) {
@@ -246,23 +253,23 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	<link rel="stylesheet" href="<?= $stylesheet ?>" />
+	<link rel="stylesheet" href="<?= $site_dir.'/'.$stylesheet ?>" />
 </head>
 <body>
 	<div id="container">
 
-		<form id="search">
+		<form id="search" action="<?= rtrim($site_dir, '/') ?>/" method="<?= ($pretty_urls) ? 'post' : 'get' ?>">
 			<h1>Search your zoo</h1>
 
 			<select name="type">
-				<option value="searchterm"<?php if(isset($_GET['type']) && $_GET['type'] == 'searchterm') echo('selected') ?>>title</option>
+				<option value="search"<?php if(isset($_GET['type']) && $_GET['type'] == 'search') echo('selected') ?>>title</option>
 				<option value="tag"<?php if(isset($_GET['type']) && $_GET['type'] == 'tag') echo('selected') ?>>tag</option>
 			</select>
 			<input type="text" name="term" value="<?php if(isset($_GET['term']) && !empty($_GET['term'])) echo(stripslashes($_GET['term'])) ?>" placeholder="search term or tag"<?php if(!isset($_GET['prefill'])) echo(' autofocus') ?> />
 			<input type="submit" value="search" /> or <a href="#add" id="add-toggle" class="button">Add a new URL</a>
 		</form>
 
-		<form id="add"<?php if(isset($_GET['prefill'])) echo(' class="show"') ?>>
+		<form id="add"<?php if(isset($_GET['prefill'])) echo(' class="show"') ?> action="<?= rtrim($site_dir, '/') ?>/">
 			<h1>Add a new URL</h1>
 
 			<input type="hidden" name="new" value="1" />

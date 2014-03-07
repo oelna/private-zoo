@@ -28,3 +28,9 @@ I just wanted a way to continue to use the bookmarks I have amassed, combined wi
 - wait a while for the import to finish
 - go to yourserver.com/private-zoo/, start searching your archive or add new URLs
 - (optional) drag the "Lasso" bookmarklet to make bookmarking even easier
+
+If you would like to use pretty urls for the site:
+
+- edit index.php and set *$pretty_urls* to 1
+- edit the .htaccess file (may be invisible) and set *RewriteBase* to the path you're hosting the site in
+- enjoy /search/foo/ and /tag/bar/
