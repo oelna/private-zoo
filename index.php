@@ -1,4 +1,5 @@
 <?php
+	//error_reporting(E_ALL);
 	header('Content-Type: text/html; charset=utf-8');
 	date_default_timezone_set('Europe/Berlin');
 	DEFINE('DS', DIRECTORY_SEPARATOR);
@@ -16,7 +17,7 @@
 		'error' => array()
 	);
 	$sqlite_support = (in_array('sqlite', PDO::getAvailableDrivers())) ? true : false;
-	$zootool_export_filename = $_GET['import']; //needs to be the JSON format export, eg. "zoo_export_20140227.json"
+	$zootool_export_filename = (isset($_GET['import'])) ? $_GET['import'] : false; //needs to be the JSON format export, eg. "zoo_export_20140227.json"
 	$is_import = (isset($_GET['import'])) ? true : false;
 
 	if($overwrite_database === 1 && file_exists(PATH.DS.$database_name)) {
@@ -174,7 +175,7 @@
 
 
 		//CASE ADD NEW URL
-		if(isset($_GET['new']) || $_GET['new'] == 1) {
+		if(isset($_GET['new']) && $_GET['new'] == 1) {
 			//todo: add items!
 			$insert = array(
 				'title' => $_GET['title'],
