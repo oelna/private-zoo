@@ -123,14 +123,11 @@ a.button {
 }
 
 #entries dd .desc {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	word-wrap: break-word;
 }
 
 #entries dd .url {
 	color: #4cd964;
-	/* word-wrap: break-word; */
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
