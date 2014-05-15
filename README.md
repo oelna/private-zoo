@@ -34,3 +34,10 @@ If you would like to use pretty urls for the site:
 - edit index.php and set *$pretty_urls* to 1
 - edit the .htaccess file (may be invisible) and set *RewriteBase* to the path you're hosting the site in
 - enjoy /search/foo/ and /tag/bar/
+
+
+### Support my work
+
+If you'd like to support what I do, please consider tipping.  
+[![Gittip](https://dl.dropboxusercontent.com/u/19750980/logo_gittip.png)](https://www.gittip.com/oelna/)  [![Flattr](https://dl.dropboxusercontent.com/u/19750980/logo_flattr.png)](https://flattr.com/submit/auto?user_id=oelna&url=https%3A%2F%2Fgithub.com%2Foelna%2Fprivate-zoo&title=private-zoo&language=en&tags=github&category=software)
+
