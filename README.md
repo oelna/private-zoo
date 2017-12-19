@@ -39,5 +39,5 @@ If you would like to use pretty urls for the site:
 ### Support my work
 
 If you'd like to support what I do, please consider tipping.  
-[![Gittip](https://dl.dropboxusercontent.com/u/19750980/logo_gittip.png)](https://www.gittip.com/oelna/)  [![Flattr](https://dl.dropboxusercontent.com/u/19750980/logo_flattr.png)](https://flattr.com/submit/auto?user_id=oelna&url=https%3A%2F%2Fgithub.com%2Foelna%2Fprivate-zoo&title=private-zoo&language=en&tags=github&category=software)
+[![Gittip](https://www.dropbox.com/s/23emy7ngeqdnrrc/logo_gittip.png?raw=1)](https://www.gittip.com/oelna/)  [![Flattr](https://www.dropbox.com/s/20legqru72ffddw/logo_flattr.png?raw=1)](https://flattr.com/submit/auto?user_id=oelna&url=https%3A%2F%2Fgithub.com%2Foelna%2Fprivate-zoo&title=private-zoo&language=en&tags=github&category=software)
 
